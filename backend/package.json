@@ -1,0 +1,22 @@
+{
+  "name": "nem",
+  "version": "0.1.0",
+  "description": "Node - Express - Mongo",
+  "keywords": [
+    "node",
+    "express",
+    "mongo"
+  ],
+  "license": "Apache-2.0 License",
+  "main": "server.js",
+  "repository": "github:philippebeck/nem",
+  "bugs": "https://github.com/philippebeck/nem/issues",
+  "dependencies": {
+    "express": "^4.17.2"
+  },
+  "author": {
+    "name": "Philippe Beck",
+    "email": "philippe@philippebeck.net",
+    "url": "https://philippebeck.net"
+  }
+}

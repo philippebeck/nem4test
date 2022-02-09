@@ -1,6 +1,6 @@
 {
   "name": "nem",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Node - Express - Mongo",
   "keywords": [
     "node",
@@ -12,9 +12,12 @@
   "repository": "github:philippebeck/nem",
   "bugs": "https://github.com/philippebeck/nem/issues",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
-    "mongoose": "^6.2.1"
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.2.1",
+    "mongoose-unique-validator": "^3.0.0"
   },
   "author": {
     "name": "Philippe Beck",

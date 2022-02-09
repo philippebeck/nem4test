@@ -1,14 +1,15 @@
 "use strict";
 
-const express = require('express');
-const router = express.Router();
+const express = require("express");
+const router  = express.Router();
 
-const ThingCtrl = require('../controllers/ThingCtrl');
+const auth      = require("../middleware/auth");
+const ThingCtrl = require("../controllers/ThingCtrl");
 
-router.get('/', ThingCtrl.listThing);
-router.post('/', ThingCtrl.createThing);
-router.get('/:id', ThingCtrl.readThing);
-router.put('/:id', ThingCtrl.updateThing);
-router.delete('/:id', ThingCtrl.deleteThing);
+router.get("/", auth, ThingCtrl.listThing);
+router.post("/", auth, ThingCtrl.createThing);
+router.get("/:id", auth, ThingCtrl.readThing);
+router.put("/:id", auth, ThingCtrl.updateThing);
+router.delete("/:id", auth, ThingCtrl.deleteThing);
 
 module.exports = router;

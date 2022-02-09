@@ -3,7 +3,8 @@
 const express     = require("express");
 const app         = express();
 const mongoose    = require("mongoose");
-const thingRoute  = require('./routes/ThingRoute');
+const thingRoute  = require("./routes/ThingRoute");
+const userRoute   = require("./routes/UserRoute")
 
 require("dotenv").config();
 
@@ -31,6 +32,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/stuff', thingRoute);
+app.use("/api/stuff", thingRoute);
+app.use("/api/auth", userRoute);
 
 module.exports = app;

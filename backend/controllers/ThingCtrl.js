@@ -1,7 +1,13 @@
 "use strict";
 
-const ThingModel  = require('../models/ThingModel');
+const ThingModel  = require("../models/ThingModel");
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.listThing = (req, res, next) => {
   ThingModel.find().then(
     (things) => {
@@ -16,6 +22,12 @@ exports.listThing = (req, res, next) => {
   );
 };
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.createThing = (req, res, next) => {
   const thing = new ThingModel ({
     title: req.body.title,
@@ -28,7 +40,7 @@ exports.createThing = (req, res, next) => {
   thing.save().then(
     () => {
       res.status(201).json({
-        message: 'Post saved successfully!'
+        message: "Post saved successfully!"
       });
     }
   ).catch(
@@ -40,6 +52,12 @@ exports.createThing = (req, res, next) => {
   );
 };
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.readThing = (req, res, next) => {
   ThingModel.findOne({
     _id: req.params.id
@@ -56,6 +74,12 @@ exports.readThing = (req, res, next) => {
   );
 };
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.updateThing = (req, res, next) => {
   const thing = new ThingModel ({
     _id: req.params.id,
@@ -69,7 +93,7 @@ exports.updateThing = (req, res, next) => {
   ThingModel.updateOne({_id: req.params.id}, thing).then(
     () => {
       res.status(201).json({
-        message: 'Thing updated successfully!'
+        message: "Thing updated successfully!"
       });
     }
   ).catch(
@@ -81,18 +105,38 @@ exports.updateThing = (req, res, next) => {
   );
 };
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.deleteThing = (req, res, next) => {
-  ThingModel.deleteOne({_id: req.params.id}).then(
-    () => {
-      res.status(200).json({
-        message: 'Deleted!'
-      });
+  ThingModel.findOne({ _id: req.params.id }).then(
+    (thing) => {
+      if (!thing) {
+        res.status(404).json({
+          error: new Error("No such Thing!")
+        });
+      }
+      if (thing.userId !== req.auth.userId) {
+        res.status(400).json({
+          error: new Error("Unauthorized request!")
+        });
+      }
+      ThingModel.deleteOne({_id: req.params.id}).then(
+        () => {
+          res.status(200).json({
+            message: "Deleted!"
+          });
+        }
+      ).catch(
+        (error) => {
+          res.status(400).json({
+            error: error
+          });
+        }
+      );
     }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
+  )
 };

@@ -1,5 +1,6 @@
 "use strict";
 
+const fs          = require("fs");
 const ThingModel  = require("../models/ThingModel");
 
 /**
@@ -9,17 +10,10 @@ const ThingModel  = require("../models/ThingModel");
  * @param {*} next 
  */
 exports.listThing = (req, res, next) => {
-  ThingModel.find().then(
-    (things) => {
-      res.status(200).json(things);
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
+  ThingModel
+    .find()
+    .then(things => res.status(200).json(things))
+    .catch(error => res.status(400).json({ error }));
 };
 
 /**
@@ -29,27 +23,16 @@ exports.listThing = (req, res, next) => {
  * @param {*} next 
  */
 exports.createThing = (req, res, next) => {
-  const thing = new ThingModel ({
-    title: req.body.title,
-    description: req.body.description,
-    imageUrl: req.body.imageUrl,
-    price: req.body.price,
-    userId: req.body.userId
-  });
+  const thingObject = JSON.parse(req.body.thing);
+  delete thingObject._id;
 
-  thing.save().then(
-    () => {
-      res.status(201).json({
-        message: "Post saved successfully!"
-      });
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
+  const imgUrl  = `${req.protocol}://${req.get("host")}/img/${req.file.filename}`;
+  const thing   = new ThingModel({ ...thingObject, imageUrl: imgUrl });
+
+  thing
+    .save()
+    .then(() => res.status(201).json({ message: "Post saved successfully!" }))
+    .catch(error => res.status(400).json({ error }));
 };
 
 /**
@@ -59,19 +42,10 @@ exports.createThing = (req, res, next) => {
  * @param {*} next 
  */
 exports.readThing = (req, res, next) => {
-  ThingModel.findOne({
-    _id: req.params.id
-  }).then(
-    (thing) => {
-      res.status(200).json(thing);
-    }
-  ).catch(
-    (error) => {
-      res.status(404).json({
-        error: error
-      });
-    }
-  );
+  ThingModel
+    .findOne({_id: req.params.id })
+    .then(thing => res.status(200).json(thing))
+    .catch(error => res.status(404).json({error}));
 };
 
 /**
@@ -81,28 +55,17 @@ exports.readThing = (req, res, next) => {
  * @param {*} next 
  */
 exports.updateThing = (req, res, next) => {
-  const thing = new ThingModel ({
-    _id: req.params.id,
-    title: req.body.title,
-    description: req.body.description,
-    imageUrl: req.body.imageUrl,
-    price: req.body.price,
-    userId: req.body.userId
-  });
-  
-  ThingModel.updateOne({_id: req.params.id}, thing).then(
-    () => {
-      res.status(201).json({
-        message: "Thing updated successfully!"
-      });
+  const thingObject = req.file ?
+    {
+      ...JSON.parse(req.body.thing),
+      imageUrl: `${req.protocol}://${req.get("host")}/img/${req.file.filename}`
     }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
+    : { ...req.body };
+    
+  ThingModel
+    .updateOne({ _id: req.params.id }, { ...thingObject, _id: req.params.id })
+    .then(() => res.status(200).json({ message: "Objet modifié !" }))
+    .catch(error => res.status(400).json({ error }));
 };
 
 /**
@@ -112,31 +75,17 @@ exports.updateThing = (req, res, next) => {
  * @param {*} next 
  */
 exports.deleteThing = (req, res, next) => {
-  ThingModel.findOne({ _id: req.params.id }).then(
-    (thing) => {
-      if (!thing) {
-        res.status(404).json({
-          error: new Error("No such Thing!")
-        });
-      }
-      if (thing.userId !== req.auth.userId) {
-        res.status(400).json({
-          error: new Error("Unauthorized request!")
-        });
-      }
-      ThingModel.deleteOne({_id: req.params.id}).then(
-        () => {
-          res.status(200).json({
-            message: "Deleted!"
-          });
-        }
-      ).catch(
-        (error) => {
-          res.status(400).json({
-            error: error
-          });
-        }
-      );
-    }
-  )
+  ThingModel
+    .findOne({ _id: req.params.id })
+    .then(thing => {
+      const filename = thing.imageUrl.split("/img/")[1];
+
+      fs.unlink(`img/${filename}`, () => {
+        ThingModel
+          .deleteOne({ _id: req.params.id })
+          .then(() => res.status(200).json({ message: "Objet supprimé !" }))
+          .catch(error => res.status(400).json({ error }));
+      });
+    })
+    .catch(error => res.status(500).json({ error }));
 };

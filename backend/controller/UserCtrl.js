@@ -1,48 +1,57 @@
 "use strict";
 
-const bcrypt    = require("bcrypt");
-const jwt       = require("jsonwebtoken");
-const UserModel = require("../models/UserModel");
+const bcrypt  = require("bcrypt");
+const jwt     = require("jsonwebtoken");
+
+const UserModel = require("../model/UserModel");
 
 require("dotenv").config();
 
 /**
- * 
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * @param {object} req 
+ * @param {object} res 
+ * @param {function} next 
  */
 exports.signup = (req, res, next) => {
-  bcrypt.hash(req.body.password, 10)
+  bcrypt
+    .hash(req.body.password, 10)
     .then(hash => {
       const user = new UserModel({
         email: req.body.email,
         password: hash
       });
+
       user.save()
-        .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
+        .then(() => res.status(201).json({ message: "User Created !" }))
         .catch(error => res.status(400).json({ error }));
     })
     .catch(error => res.status(500).json({ user }));
 };
 
 /**
- * 
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * @param {object} req 
+ * @param {object} res 
+ * @param {function} next 
  */
 exports.login = (req, res, next) => {
-  UserModel.findOne({ email: req.body.email })
+  UserModel
+    .findOne({ email: req.body.email })
     .then(user => {
+
       if (!user) {
-        return res.status(401).json({ error: "Utilisateur non trouvé !" });
+
+        return res.status(401).json({ error: "User Not Found !" });
       }
-      bcrypt.compare(req.body.password, user.password)
+
+      bcrypt
+        .compare(req.body.password, user.password)
         .then(valid => {
+
           if (!valid) {
-            return res.status(401).json({ error: "Mot de passe incorrect !" });
+
+            return res.status(401).json({ error: "Incorrect Password !" });
           }
+
           res.status(200).json({
             userId: user._id,
             token: jwt.sign(

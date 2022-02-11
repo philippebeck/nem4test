@@ -3,7 +3,7 @@
 const express = require("express");
 const router  = express.Router();
 
-const UserCtrl = require("../controllers/UserCtrl");
+const UserCtrl = require("../controller/UserCtrl");
 
 router.post("/signup", UserCtrl.signup);
 router.post("/login", UserCtrl.login);

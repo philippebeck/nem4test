@@ -4,8 +4,8 @@ const express   = require("express");
 const mongoose  = require("mongoose");
 const path      = require("path");
 
-const thingRoute  = require("./routes/ThingRoute");
-const userRoute   = require("./routes/UserRoute")
+const MainRoute = require("./route/MainRoute");
+const UserRoute = require("./route/UserRoute");
 
 require("dotenv").config();
 
@@ -18,7 +18,6 @@ mongoose
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 
 const app = express();
-
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -39,7 +38,7 @@ app.use((req, res, next) => {
 
 app.use("/img", express.static(path.join(__dirname, "img")));
 
-app.use("/api/stuff", thingRoute);
-app.use("/api/auth", userRoute);
+app.use("/api/stuff", MainRoute);
+app.use("/api/auth", UserRoute);
 
 module.exports = app;

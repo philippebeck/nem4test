@@ -2,7 +2,10 @@
 
 const express   = require("express");
 const mongoose  = require("mongoose");
-const path      = require("path");
+
+const helmet        = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const path          = require("path");
 
 const MainRoute = require("./route/MainRoute");
 const UserRoute = require("./route/UserRoute");
@@ -18,7 +21,10 @@ mongoose
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 
 const app = express();
+
 app.use(express.json());
+app.use(helmet());
+app.use(mongoSanitize());
 
 app.use((req, res, next) => {
   res.setHeader(

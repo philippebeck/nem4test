@@ -1,11 +1,23 @@
 "use strict";
 
-const bcrypt  = require("bcrypt");
-const jwt     = require("jsonwebtoken");
+const bcrypt            = require("bcrypt");
+const emailValidator    = require("email-validator"); 
+const jwt               = require("jsonwebtoken");
+const passwordValidator = require("password-validator");
 
 const UserModel = require("../model/UserModel");
 
 require("dotenv").config();
+
+const schema = new passwordValidator();
+
+schema
+  .is().min(8)
+  .is().max(50)
+  .has().uppercase()
+  .has().lowercase()
+  .has().digits(1)
+  .has().not().spaces();
 
 /**
  * @param {object} req 
@@ -13,6 +25,16 @@ require("dotenv").config();
  * @param {function} next 
  */
 exports.signup = (req, res, next) => {
+  if (!emailValidator.validate(req.body.email)) {
+    
+    return res.status(401).json({ message: "Please enter a valid email address" });
+  }
+
+  if (!schema.validate(req.body.password)) {
+
+    return res.status(401).json({ message: "Invalid password !" });
+  };
+
   bcrypt
     .hash(req.body.password, 10)
     .then(hash => {

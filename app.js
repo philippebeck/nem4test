@@ -17,13 +17,13 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
-  .then(() => console.log("Connexion à MongoDB réussie !"))
-  .catch(() => console.log("Connexion à MongoDB échouée !"));
+  .then(() => console.log("Connection to MongoDB successful !"))
+  .catch(() => console.log("Connection to MongoDB failed !"));
 
 const app = express();
 
 app.use(express.json());
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: process.env.HELMET_CORS }));
 app.use(mongoSanitize());
 
 app.use((req, res, next) => {
@@ -44,7 +44,7 @@ app.use((req, res, next) => {
 
 app.use("/img", express.static(path.join(__dirname, "img")));
 
-app.use("/api/stuff", MainRoute);
-app.use("/api/auth", UserRoute);
+app.use(process.env.MAIN_ROUTE, MainRoute);
+app.use(process.env.USER_ROUTE, UserRoute);
 
 module.exports = app;

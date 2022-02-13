@@ -12,11 +12,11 @@ require("dotenv").config();
 const schema = new passwordValidator();
 
 schema
-  .is().min(8)
-  .is().max(50)
+  .is().min(process.env.PASSWORD_MIN)
+  .is().max(process.env.PASSWORD_MAX)
   .has().uppercase()
   .has().lowercase()
-  .has().digits(1)
+  .has().digits(process.env.PASSWORD_DIGITS)
   .has().not().spaces();
 
 /**

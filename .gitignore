@@ -1,4 +1,4 @@
-backend/.env
-backend/img/
-backend/node_modules/
-frontend/
+.env
+img/
+node_modules/
+public/

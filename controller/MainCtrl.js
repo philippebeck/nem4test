@@ -43,7 +43,7 @@ exports.read = (req, res, next) => {
   MainModel
     .findOne({_id: req.params.id })
     .then(thing => res.status(200).json(thing))
-    .catch(error => res.status(404).json({error}));
+    .catch(error => res.status(404).json({ error }));
 };
 
 /**

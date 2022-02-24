@@ -3,11 +3,10 @@
 const express   = require("express");
 const mongoose  = require("mongoose");
 
-const helmet        = require("helmet");
-const mongoSanitize = require("express-mongo-sanitize");
-const path          = require("path");
+const helmet    = require("helmet");
+const sanitize  = require("express-mongo-sanitize");
+const path      = require("path");
 
-const MainRoute = require("./route/MainRoute");
 const UserRoute = require("./route/UserRoute");
 
 require("dotenv").config();
@@ -21,10 +20,10 @@ mongoose
   .catch(() => console.log("Connection to MongoDB failed !"));
 
 const app = express();
-
 app.use(express.json());
-app.use(helmet({ crossOriginResourcePolicy: process.env.HELMET_CORS }));
-app.use(mongoSanitize());
+
+app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(sanitize());
 
 app.use((req, res, next) => {
   res.setHeader(
@@ -44,7 +43,6 @@ app.use((req, res, next) => {
 
 app.use("/img", express.static(path.join(__dirname, "img")));
 
-app.use(process.env.MAIN_ROUTE, MainRoute);
 app.use(process.env.USER_ROUTE, UserRoute);
 
 module.exports = app;
